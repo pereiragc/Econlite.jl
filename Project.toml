@@ -3,6 +3,10 @@ uuid = "98717294-0ee0-4f97-b9e0-ac1b904923ac"
 authors = ["Gustavo <gdp2116@columbia.edu>"]
 version = "0.1.0"
 
+[deps]
+Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
+Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+
 [compat]
 julia = "1"
 
