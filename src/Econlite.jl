@@ -11,7 +11,7 @@ export util, invutil, dutil, invdutil
 include("utility.jl")
 
 
-export aggr, partial_aggr, invpartial_aggr, Armington
+export aggr, partial_aggr, invpartial_aggr, gradient_aggr, gradient_aggr!, Armington, CobbDouglas
 include("aggregators.jl")
 
 end # module
