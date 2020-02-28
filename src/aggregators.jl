@@ -4,21 +4,43 @@ abstract type AbstractAggregator end
 abstract type AbstractCESAggregator <: AbstractAggregator end
 ngoods(aa::AbstractCESAggregator)=length(aa.shares)
 share(j, aa::AbstractCESAggregator)=aa.shares[j]
+#=
+INSTRUCTIONS FOR EXTENDING ABSTRACT CES AGGREGATOR
 
+Subtypes should have:
+- A type `shares` whose length determines the number of aggregated entities (e.g. goods)
+- The following methods:
++ `_aggr(x, t::SubType, NoSkip)`  should evaluate the aggregator at (iterable) point x.
+                                  `aggr` will default to this specification.
++ `_aggr(x, t::SubType, leaveout::Int64)` should evaluate the aggregator leaving out element `j`
 
-struct NoSkip end
++ `_partial_aggr(x, j, Z, t::SubType)` should evaluate the aggregator's j-th partial derivative at,
+                                       point x.
+                                       The argument Z is the evaluated aggregator. Even if it's not
+                                       not necessary, leave it there anyhow.
++  `invpartial_aggr(x,j,k,t::SubType)` should solve the equation ∂ⱼF(ξ, x₋ⱼ) = k for ξ
+=#
 
 aggr(x, aa::AbstractCESAggregator)=_aggr(x, aa, NoSkip)
 aggr(x, aa::AbstractCESAggregator, leaveout)=_aggr(x, aa, leaveout)
 
 # Seems to make execution (a bit) slower. Perhaps revert to regular checking?
+struct NoSkip end
+# Inlining breaks the code. Seems to make execution (a bit) slower. Perhaps
+# revert to regular checking?
 @noinline cond_include(x, g, neutral, ::Type{NoSkip})=x
 @noinline cond_include(x, g, neutral, n::Int64)=ifelse(g == n, neutral, x)
 # @noinline cond_include(x, g, neutral, nn::NTuple{N, Int64}) where {N} = ifelse(g in nn, neutral, x)
 
 
-# ARMINGTON AGGREGATOR (longest section) ---------------------------------------
 
+
+
+
+
+
+
+# ARMINGTON AGGREGATOR (longest section) ---------------------------------------
 struct Armington{N} <: AbstractCESAggregator
     es::Float64 # elasticity of substitution
     shares::NTuple{N, Float64}
