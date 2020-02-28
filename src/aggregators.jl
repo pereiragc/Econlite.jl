@@ -187,7 +187,7 @@ end
 
 
 function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas)
-    (k/cobbdoug.shares[j]/aggr(x, cobbdoug, leaveout=j))^(1/(cobbdoug.shares[j]-1))
+    (k/cobbdoug.shares[j]/aggr(x, cobbdoug, j))^(1/(cobbdoug.shares[j]-1))
 end
 
 _partial_aggr(x, j, aggr_val, cobbdoug::CobbDouglas)=cobbdoug.shares[j]*aggr_val/x[j]
