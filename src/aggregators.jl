@@ -24,7 +24,30 @@ Subtypes should have:
 aggr(x, aa::AbstractCESAggregator)=_aggr(x, aa, NoSkip)
 aggr(x, aa::AbstractCESAggregator, leaveout)=_aggr(x, aa, leaveout)
 
-# Seems to make execution (a bit) slower. Perhaps revert to regular checking?
+" Partial derivative of aggregator wrt coordinate `j`"
+partial_aggr(x,j,aa::AbstractCESAggregator)=_partial_aggr(x,j,aggr(x, aa),aa)
+
+function gradient_aggr!(gr, x, aa::AbstractCESAggregator)
+    ev = aggr(x, aa)
+    @inbounds for g in 1:length(aa)
+        gr[g] = _partial_aggr(x, g, ev, aa)
+    end
+end
+
+"Aggregator gradient (allocates) "
+function gradient_aggr(x,aa::AbstractCESAggregator)
+    gr = fill(0., ngoods(aa))
+    gradient_aggr!(gr, x, aa)
+    return gr
+end
+
+"Aggregator gradient (returns tuple)"
+function gradient_aggr_t(x,aa::AbstractCESAggregator)
+    ev = aggr(x, aa)
+    map(g -> _partial_aggr(x, g, ev, aa), 1:ngoods(aa))
+end
+
+
 struct NoSkip end
 # Inlining breaks the code. Seems to make execution (a bit) slower. Perhaps
 # revert to regular checking?
@@ -63,26 +86,6 @@ function _aggr(x, aa::Armington, leaveout)
     return r^(1/pow)
 end
 
-" Partial derivative of aggregator wrt coordinate `j`"
-partial_aggr(x,j,aa::Armington)=_partial_aggr(x,j,aggr(x, aa),aa)
-
-
-"Aggregator gradient"
-function gradient_aggr(x,aa::Armington)
-    gr = fill(0., ngoods(aa))
-    gradient_aggr!(gr, x, aa)
-    return gr
-end
-
-
-" Mutating version of aggregator gradient (`gr` and `x` should be same dimension) "
-function gradient_aggr!(gr,x,aa::Armington)
-    aggr_val_e = aggr(x, aa)
-    @inbounds for j in eachindex(gr)
-        gr[j]=_partial_aggr(x,j,aggr_val_e,aa)
-    end
-    nothing
-end
 
 doc"""
     invpartial_aggr(x,j,k,a::Armington)
@@ -157,7 +160,9 @@ end
 
 
 # COBB-DOUGLAS AGGREGATOR ------------------------------------------------------
-# This is a special case of Armington when shares add up to one.
+
+# This is a special case of Armington when shares add up to one, and the
+# elasticity of substitution parameter equals 1.
 
 struct CobbDouglas{N} <: AbstractCESAggregator
     shares::NTuple{N, Float64}
@@ -181,34 +186,19 @@ function _aggr(x, cobbdoug::CobbDouglas, leaveout)
 end
 
 
-partial_aggr(x, j, cobbdoug::CobbDouglas)=_partial_aggr(x,j,aggr(x,cobbdoug),cobbdoug)
-
-function gradient_aggr(x,cobbdoug::CobbDouglas)
-    gr = similar(x)
-    gradient_aggr!(gr, x, cobbdoug)
-    return gr
-end
-
 function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas)
     (k/cobbdoug.shares[j]/aggr(x, cobbdoug, leaveout=j))^(1/(cobbdoug.shares[j]-1))
 end
 
 _partial_aggr(x, j, aggr_val, cobbdoug::CobbDouglas)=cobbdoug.shares[j]*aggr_val/x[j]
-function gradient_aggr!(gr,x,cobbdoug::CobbDouglas)
-    aggr_val = aggr(x, cobbdoug)
-    for i in eachindex(x)
-        gr[i]=_partial_aggr(x, i, aggr_val, cobbdoug)
-    end
-    nothing
-end
 
 # Specialize 2 goods
 aggr(x, cobbdoug::CobbDouglas{2})=x[1]^cobbdoug.shares[1]*x[2]^cobbdoug.shares[2]
 function partial_aggr(x, j, cobbdoug::CobbDouglas{2})
-    jother = 3 - j
+    j_other = 3 - j
     share_mine = cobbdoug.shares[j]
-    share_other = cobbdoug.shares[jother]
-    x_other = x[jother]
+    share_other = cobbdoug.shares[j_other]
+    x_other = x[j_other]
 
     share_mine * x[j]^(share_mine-one(share_mine)) * x_other^share_other
 end
