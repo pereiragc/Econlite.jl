@@ -1,9 +1,6 @@
 abstract type AbstractAggregator end
 
 
-abstract type AbstractCESAggregator <: AbstractAggregator end
-ngoods(aa::AbstractCESAggregator)=length(aa.shares)
-share(j, aa::AbstractCESAggregator)=aa.shares[j]
 #=
 INSTRUCTIONS FOR EXTENDING ABSTRACT CES AGGREGATOR
 
@@ -23,6 +20,11 @@ Otherwise, you have to define those methods yourself.
 Moreover, users might expect the following:
 + `invpartial_aggr(x,j,k,t::SubType)` should solve the equation ∂ⱼF(ξ, x₋ⱼ) = k for ξ
 =#
+abstract type AbstractCESAggregator <: AbstractAggregator end
+ngoods(aa::AbstractCESAggregator)=length(aa.shares)
+share(j, aa::AbstractCESAggregator)=aa.shares[j]
+
+
 
 aggr(x, aa::AbstractCESAggregator)=_aggr(x, aa, NoSkip)
 # aggr(x, aa::AbstractCESAggregator, leaveout)=_aggr(x, aa, leaveout)
