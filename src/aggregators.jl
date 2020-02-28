@@ -9,7 +9,7 @@ INSTRUCTIONS FOR EXTENDING ABSTRACT CES AGGREGATOR
 
 Subtypes should have:
 - A type `shares` whose length determines the number of aggregated entities (e.g. goods)
-- The following methods:
+- If you  want to use `aggr`, `gradient_aggr`, `partial_aggr` defined for AbstractCESAggregator:
 + `_aggr(x, t::SubType, NoSkip)`  should evaluate the aggregator at (iterable) point x.
                                   `aggr` will default to this specification.
 + `_aggr(x, t::SubType, leaveout::Int64)` should evaluate the aggregator leaving out element `j`
@@ -18,7 +18,10 @@ Subtypes should have:
                                        point x.
                                        The argument Z is the evaluated aggregator. Even if it's not
                                        not necessary, leave it there anyhow.
-+  `invpartial_aggr(x,j,k,t::SubType)` should solve the equation ∂ⱼF(ξ, x₋ⱼ) = k for ξ
+Otherwise, you have to define those methods yourself.
+
+Moreover, users might expect the following:
++ `invpartial_aggr(x,j,k,t::SubType)` should solve the equation ∂ⱼF(ξ, x₋ⱼ) = k for ξ
 =#
 
 aggr(x, aa::AbstractCESAggregator)=_aggr(x, aa, NoSkip)
