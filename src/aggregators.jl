@@ -25,7 +25,7 @@ Moreover, users might expect the following:
 =#
 
 aggr(x, aa::AbstractCESAggregator)=_aggr(x, aa, NoSkip)
-aggr(x, aa::AbstractCESAggregator, leaveout)=_aggr(x, aa, leaveout)
+# aggr(x, aa::AbstractCESAggregator, leaveout)=_aggr(x, aa, leaveout)
 
 " Partial derivative of aggregator wrt coordinate `j`"
 partial_aggr(x,j,aa::AbstractCESAggregator)=_partial_aggr(x,j,aggr(x, aa),aa)
@@ -190,7 +190,7 @@ end
 
 
 function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas)
-    (k/cobbdoug.shares[j]/aggr(x, cobbdoug, j))^(1/(cobbdoug.shares[j]-1))
+    (k/cobbdoug.shares[j]/_aggr(x, cobbdoug, j))^(1/(cobbdoug.shares[j]-1))
 end
 
 _partial_aggr(x, j, aggr_val, cobbdoug::CobbDouglas)=cobbdoug.shares[j]*aggr_val/x[j]
@@ -210,3 +210,27 @@ function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas{2})
     aux = share(j, cobbdoug) * x[3-j]^share(3-j, cobbdoug)
     (k / aux)^(1/(share(j,cobbdoug) - 1))
 end
+
+
+
+
+
+
+
+# LINEAR AGGREGATOR   ----------------------------------------------------------
+# This when the elasticity of substitution is infinite.
+
+struct AggLinear{N} <: AbstractCESAggregator
+    shares::NTuple{N, Float64}
+end
+
+# aggr(x, la::AggLinear)=sum(la.shares.*x)
+function aggr(x, la::AggLinear)
+    for g in 1:ngoods(la)
+        la.shares.*x
+    end
+end
+
+invpartial_aggr(x, j, k, la::AggLinear)=error("Can't invert constant function")
+partial_aggr(x,j,la::AggLinear)=la.shares[j]
+gradient_aggr(x, la::AggLinear)=collect(la.shares)
