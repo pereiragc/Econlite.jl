@@ -12,7 +12,7 @@ include("utility.jl")
 
 
 # Aggregators
-export aggr, partial_aggr, invpartial_aggr, gradient_aggr, gradient_aggr!
+export aggr, invaggr, partial_aggr, invpartial_aggr, gradient_aggr, gradient_aggr!
 export Armington, CobbDouglas, AggLinear
 include("aggregators.jl")
 

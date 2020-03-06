@@ -106,7 +106,7 @@ function invpartial_aggr(x,j,k,aa::Armington)
     pow = 1 - 1/aa.es
     vv = aggr(x, aa, j)
 
-    t1 = (k/aa.shares[j])^(aa.es-1)-aa.shares[j]
+    t1 = (k/share(j, aa))^(aa.es-1)-share(j, aa)
     t1 ^= -1/pow
 
     return vv*t1
@@ -117,8 +117,8 @@ function invpartial_aggr(x, j, k, aa::Armington{2})
     pow = aa.es/(aa.es - 1)
     pow2 =  aa.es - 1
 
-    w_mine = aa.shares[j]
-    w_other = aa.shares[3-j]
+    w_mine = share(j, aa)
+    w_other = share(3-j, aa)
     x_other = x[3-j]
 
     # Just check the formula... :(
@@ -147,7 +147,7 @@ The extra argument for the function value is useful when computing the gradient
 """
 function _partial_aggr(x, j, aggr_val_e, aa::Armington)
     pow = 1/aa.es
-    r = x[j]^(-pow) * aa.shares[j]
+    r = x[j]^(-pow) * share(j, aa)
     r *= aggr_val_e^pow
 end
 
@@ -182,35 +182,47 @@ CobbDouglas(a::Float64)=CobbDouglas((a, 1-a))
 
 
 
-function _aggr(x, cobbdoug::CobbDouglas, leaveout)
+function _aggr(x, cbd::CobbDouglas, leaveout)
     r = one(eltype(x))
-    for i in 1:ngoods(cobbdoug)
-        r *= cond_include(x[i]^cobbdoug.shares[i], i, 1., leaveout)
+    for i in 1:ngoods(cbd)
+        r *= cond_include(x[i]^cbd.shares[i], i, 1., leaveout)
     end
     return r
 end
 
-
-function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas)
-    (k/cobbdoug.shares[j]/_aggr(x, cobbdoug, j))^(1/(cobbdoug.shares[j]-1))
+function invaggr(x,j,y,cbd::CobbDouglas)
+    r = y
+    r /=  _aggr(x, cbd, j) # leave out entry j
+    r ^= 1/share(j, cbd)
 end
 
-_partial_aggr(x, j, aggr_val, cobbdoug::CobbDouglas)=cobbdoug.shares[j]*aggr_val/x[j]
+function invpartial_aggr(x,j,k,cbd::CobbDouglas)
+    (k/shares(j, cbd)/_aggr(x, cbd, j))^(1/(shares(j, cbd)-1))
+end
+
+_partial_aggr(x, j, aggr_val, cbd::CobbDouglas)=shares(j, cbd)*aggr_val/x[j]
 
 # Specialize 2 goods
-aggr(x, cobbdoug::CobbDouglas{2})=x[1]^cobbdoug.shares[1]*x[2]^cobbdoug.shares[2]
-function partial_aggr(x, j, cobbdoug::CobbDouglas{2})
+aggr(x, cbd::CobbDouglas{2})=x[1]^share(1, cbd)*x[2]^share(2, cbd)
+
+function invaggr(x, j, y, cbd::CobbDouglas{2})
     j_other = 3 - j
-    share_mine = cobbdoug.shares[j]
-    share_other = cobbdoug.shares[j_other]
+    r = y/x[j_other]^share(j_other, cbd)
+    r ^= 1/share(j, cbd)
+end
+
+function partial_aggr(x, j, cbd::CobbDouglas{2})
+    j_other = 3 - j
+    share_mine = share(j, cbd)
+    share_other = share(j_other, cbd)
     x_other = x[j_other]
 
     share_mine * x[j]^(share_mine-one(share_mine)) * x_other^share_other
 end
 
-function invpartial_aggr(x,j,k,cobbdoug::CobbDouglas{2})
-    aux = share(j, cobbdoug) * x[3-j]^share(3-j, cobbdoug)
-    (k / aux)^(1/(share(j,cobbdoug) - 1))
+function invpartial_aggr(x,j,k,cbd::CobbDouglas{2})
+    aux = share(j, cbd) * x[3-j]^share(3-j, cbd)
+    (k / aux)^(1/(share(j,cbd) - 1))
 end
 
 
