@@ -45,3 +45,11 @@ struct AdValorem <: Tax
 end
 
 tax(y, lav::AdValorem)=y*lav.t
+
+
+
+# * Null tax
+
+
+struct NullTax <: Tax end
+tax(y, ::NullTax)=zero(y)
