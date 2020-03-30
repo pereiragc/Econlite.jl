@@ -3,8 +3,9 @@ using Test
 using ForwardDiff
 
 @testset "Econlite.jl" begin
-    # Write your own tests here.
 
+
+    # utility.jl
     tol = 1e-7
     l = LogUtility()
     crra = IsoElastic(0.42)
@@ -28,5 +29,8 @@ using ForwardDiff
 
         @test abs(du_fd - du) < tol
     end
+
+
+    # aggregators.jl
 
 end

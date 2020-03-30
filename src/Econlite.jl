@@ -22,4 +22,14 @@ export net, tax
 export GouveiaStrauss, AdValorem, NullTax
 include("taxes.jl")
 
+# Maximum
+export generalized_argmax!
+export SumNormalize, SumRaw
+include("maximum.jl")
+
+
+# Generate grid
+export gridpoints
+include("gridpoints.jl")
+
 end # module

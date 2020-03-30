@@ -35,7 +35,7 @@ The $\phi_0$ coefficient is the limit $\lim \tau_y^{\prime}(y)$ when
 $y\to\infty$. The other coefficients govern the degree of progressiveness of the
 function. (For example, when $\phi_2 \to 0$, no one is taxed.)
 "
-_gouveiastrauss(y, φ₀, φ₁, φ₂)=φ₀*(y-(y.^(-φ₁).+φ₂).^(-1/φ₁))
+_gouveiastrauss(y, φ₀, φ₁, φ₂)=φ₀*(y-(y^(-φ₁)+φ₂)^(-1/φ₁))
 
 
 # * Simple linear schedule
