@@ -1,6 +1,7 @@
 abstract type Tax end
 
 net(x, T::Tax)=x-tax(x, T)
+gross(x, T::Tax)=x+tax(x, T)
 
 # * Gouveia and Strauss (1994)
 struct GouveiaStrauss <: Tax

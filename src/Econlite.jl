@@ -18,7 +18,7 @@ include("aggregators.jl")
 
 
 # Taxes
-export net, tax
+export net, gross, tax
 export GouveiaStrauss, AdValorem, NullTax
 include("taxes.jl")
 
