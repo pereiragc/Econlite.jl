@@ -1,7 +1,13 @@
+
+"""
+Non-linear grid.
+
+- `nonlinear = 1` should make it uniform
+- `nonlinear > 1` concentrates around xlow
+- `nonlinear < 1` concentrates around xhigh
+
+"""
 function gridpoints(xlow, xhigh, n, nonlinear)
-    # Non-linear grid. `nonlinear = 1` should make it uniform
-    # `nonlinear > 1` concentrates around xlow
-    # `nonlinear < 1` concentrates around xhigh
     n < 3 && error("Use more points for irregular grid")
 
     if nonlinear != 1
