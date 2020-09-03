@@ -123,3 +123,34 @@ julia> mc[markov_genpath(mc, 1, 7)]
  -0.5
   0.5
 ```
+
+Also, you can "combine" two Markov chains independently using `indeptensor`: 
+
+``` julia
+
+
+julia> c = MarkovChain([true, false], [0.1  0.9;0.5  0.5])
+2-element MarkovChain{Bool}:
+ 1
+ 0
+
+julia> x = MarkovChain([-1., 1.], [0. 1.; 1. 0.])
+2-element MarkovChain{Float64}:
+ -1.0
+  1.0
+
+julia> combined = indeptensor(x, c)
+4-element MarkovChainExtended{Tuple{Float64,Bool}}:
+ (-1.0, 1)
+ (1.0, 1)
+ (-1.0, 0)
+ (1.0, 0)
+
+julia> transition(combined)
+4×4 Array{Float64,2}:
+ 0.0  0.1  0.0  0.9
+ 0.1  0.0  0.9  0.0
+ 0.0  0.5  0.0  0.5
+ 0.5  0.0  0.5  0.0
+
+```

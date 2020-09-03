@@ -34,19 +34,19 @@ MarkovChain(v, M::Matrix)=MarkovChain([v[i] for i in 1:length(v)], M,
 
 
 " Same as `MarkovChain`, but pre-store invariant distribution "
-struct ExtendedMarkovChain{T} <: IndexedMarkovChain{T}
+struct MarkovChainExtended{T} <: IndexedMarkovChain{T}
     mc::MarkovChain{T}
     invariant::Array{Float64, 1}
 end
 
-ExtendedMarkovChain(mc::MarkovChain)=
-    ExtendedMarkovChain(mc, markov_invariant(mc))
-ExtendedMarkovChain(v, M::Matrix, tol=1e-12)=
-    ExtendedMarkovChain(MarkovChain(v, M))
+MarkovChainExtended(mc::MarkovChain)=
+    MarkovChainExtended(mc, markov_invariant(mc))
+MarkovChainExtended(v, M::Matrix, tol=1e-12)=
+    MarkovChainExtended(MarkovChain(v, M))
 
 
-supp(mc::ExtendedMarkovChain)=supp(mc.mc)
-transition(mc::ExtendedMarkovChain)=transition(mc.mc)
+supp(mc::MarkovChainExtended)=supp(mc.mc)
+transition(mc::MarkovChainExtended)=transition(mc.mc)
 
 
 # Note: will also work with `Aggregate` (& anything for which `transition` is implemented)
@@ -72,7 +72,7 @@ function expect_markov(v1::AbstractArray, v2::AbstractArray, current_state, MC)
     e1, e2
 end
 
-markov_invariant(mc::ExtendedMarkovChain)=mc.invariant
+markov_invariant(mc::MarkovChainExtended)=mc.invariant
 markov_invariant(mc::MarkovChain, tol=1e-12)=markov_invariant(mc.transition,tol)
 
 " Returns eigenvector associated with A's last eigenvalue "
@@ -156,3 +156,8 @@ draw_next(mc::IndexedMarkovChain, i0, r)=begin
 end
 
 draw_next(mc::IndexedMarkovChain, i0)=draw_next(mc, i0, rand())
+
+
+
+indeptensor(mc0::IndexedMarkovChain, mc1::IndexedMarkovChain)=MarkovChainExtended(vec(collect(Base.product(mc0, mc1))),
+                                                                                         Base.kron(transition(mc1), transition(mc0)))
