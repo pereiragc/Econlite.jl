@@ -14,7 +14,7 @@ Statistics.mean(mc::AbstractMarkovChain)=dot(markov_invariant(mc), supp(mc))
 """
 
 Markov Chain type with "arbitrary" support (`T`) and pre-stored cumulative
-transition matrix. Assumes that **rows add up to one**
+transition matrix. Assumes that **rows** add up to one.
 
 """
 struct MarkovChain{T} <: AbstractMarkovChain{T}
@@ -56,7 +56,7 @@ end
 
 markov_invariant(mc::MarkovChain, tol=1e-12)=markov_invariant(mc.transition,tol)
 
-" Returns eigenvector associated with A's last eigen value "
+" Returns eigenvector associated with A's last eigenvalue "
 markov_invariant(A, tol)=begin
     ed = eigen(transpose(A))
 
