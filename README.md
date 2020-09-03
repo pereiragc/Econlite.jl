@@ -6,9 +6,29 @@ The reason for creating this package was that I wanted to avoid unnecessary repe
 - Setting up a CRRA utility function 
 - Setting up Cobb-Douglas/CES production function 
 
-along with their derivatives and inverse functions of those derivatives. 
+along with their derivatives and inverse functions of those derivatives. Plus, allow some more general statements like 
 
-Alternatives of some tools here can be found at [QuantEcon.jl](https://github.com/QuantEcon/QuantEcon.jl). 
+``` julia
+income_tax = AdValorem(0.2)
+w = 1.
+
+net(w, income_tax)
+```
+
+instead of
+``` julia
+τ = 0.2
+w = 1.
+
+w * (1 - τ)
+```
+
+That allows you to easily reparametrize for a more complicated tax system.
+
+
+## Related packages
+Check out [QuantEcon.jl](https://github.com/QuantEcon/QuantEcon.jl). 
+
 
 ## Planned features
 - [ ] Pretty printing
@@ -17,6 +37,7 @@ Alternatives of some tools here can be found at [QuantEcon.jl](https://github.co
   - [x] simulate
   - [ ] estimate
 - [x] Iteration utility 
+- [ ] Derivatives/inverses of tax functions 
 - [ ] Documentation
 
 
