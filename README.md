@@ -11,13 +11,13 @@ along with their derivatives and inverse functions of those derivatives.
 Alternatives of some tools here can be found at [QuantEcon.jl](https://github.com/QuantEcon/QuantEcon.jl). 
 
 ## Planned features
-- Pretty printing
-- Modified single-valued utilities (e.g., recentering, rescaling, general monotone transformations)
+- [ ] Pretty printing
+- [ ] Modified single-valued utilities (e.g., recentering, rescaling, general monotone transformations)
 - [x] Basic markov chain types and methods
   - [x] simulate
   - [ ] estimate
 - [x] Iteration utility 
-- Documentation
+- [ ] Documentation
 
 
 
