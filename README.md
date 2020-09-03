@@ -23,7 +23,7 @@ w = 1.
 w * (1 - τ)
 ```
 
-That allows you to easily reparametrize for a more complicated tax system.
+That allows you to easily reparametrize for a more complicated tax system. Same goes for aggregators, utility functions, etc.
 
 
 ## Related packages
