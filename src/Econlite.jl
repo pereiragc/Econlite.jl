@@ -35,4 +35,17 @@ include("maximum.jl")
 export gridpoints
 include("gridpoints.jl")
 
+
+# Iteration
+export SolutionObject, IterationSpec, DisplayMod, NoDisplay
+export within_tolerance, contract!
+include("iteration.jl")
+
+
+# MarkovChain
+export MarkovChain
+export expect_markov, transition, markov_invariant, draw_next,
+    markov_genpath, markov_genpath!, mean
+include("markovchain.jl")
+
 end # module
