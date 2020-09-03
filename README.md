@@ -73,28 +73,9 @@ julia> x0
 
 ### Markov Chain
 
-Construct and simulate a MarkovChain: 
-
 ``` julia
-import Random.seed!
+julia> import Random.seed!
 
-mc = MarkovChain([-0.5, 0.5], [
-    0.1 0.9
-    0.9 0.1
-])
-
-mc[1]
-mc[2]
-
-Random.seed!(1234);
-mc[markov_genpath(mc, 1, 7)]
-
-```
-
-
-Output: 
-
-``` julia
 julia> mc = MarkovChain([-0.5, 0.5], [
            0.1 0.9
            0.9 0.1
