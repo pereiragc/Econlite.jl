@@ -1,34 +1,52 @@
-abstract type AbstractMarkovChain{T} <: AbstractArray{T, 1} end
-supp(mc::AbstractMarkovChain)=mc.support
-Base.getindex(mc::AbstractMarkovChain, i)=supp(mc)[i]
-Base.length(mc::AbstractMarkovChain)=length(supp(mc))
-Base.IndexStyle(::Type{<:AbstractMarkovChain}) = IndexLinear()
-transition(MC::AbstractMarkovChain)=MC.transition
+"""
+     IndexedMarkovChain{T}
+
+Representation of a Markov Chain type with "arbitrary" support (`T`). Assumes
+that **rows** add up to one.
+
+"""
+abstract type IndexedMarkovChain{T} <: AbstractArray{T, 1} end
+Base.getindex(mc::IndexedMarkovChain, i)=supp(mc)[i]
+Base.length(mc::IndexedMarkovChain)=length(supp(mc))
+Base.size(mc::IndexedMarkovChain)=(length(mc), )
+Base.IndexStyle(::Type{<:IndexedMarkovChain}) = IndexLinear()
+supp(mc::IndexedMarkovChain, i)=error("Method `supp` must be implemented for $(typeof(MC)) ")
+transition(mc::IndexedMarkovChain, i, j)=transition(mc)[i,j]
 
 
 " Unconditional mean of a MarkovChain "
-Statistics.mean(mc::AbstractMarkovChain)=dot(markov_invariant(mc), supp(mc))
+Statistics.mean(mc::IndexedMarkovChain)=dot(markov_invariant(mc), supp(mc))
 
 
-
-"""
-
-Markov Chain type with "arbitrary" support (`T`) and pre-stored cumulative
-transition matrix. Assumes that **rows** add up to one.
-
-"""
-struct MarkovChain{T} <: AbstractMarkovChain{T}
+"Markov Chain with pre-stored cumulative transition matrix"
+struct MarkovChain{T} <: IndexedMarkovChain{T}
     support::Vector{T}
     transition::Matrix{Float64}
     transition_cumu::Matrix{Float64}
 end
+supp(mc::MarkovChain)=mc.support
+transition(MC::MarkovChain)=MC.transition # Make rows add up to one
 
-transition(MC::MarkovChain, i, j)=transition(MC)[i,j] # Make rows add up to one
 
 " Simples constructor for any iterable `v`. Note: no sanity check for dimensions."
 MarkovChain(v, M::Matrix)=MarkovChain([v[i] for i in 1:length(v)], M,
                                       cumsum(M, dims=2))
 
+
+" Same as `MarkovChain`, but pre-store invariant distribution "
+struct ExtendedMarkovChain{T} <: IndexedMarkovChain{T}
+    mc::MarkovChain{T}
+    invariant::Array{Float64, 1}
+end
+
+ExtendedMarkovChain(mc::MarkovChain)=
+    ExtendedMarkovChain(mc, markov_invariant(mc))
+ExtendedMarkovChain(v, M::Matrix, tol=1e-12)=
+    ExtendedMarkovChain(MarkovChain(v, M))
+
+
+supp(mc::ExtendedMarkovChain)=supp(mc.mc)
+transition(mc::ExtendedMarkovChain)=transition(mc.mc)
 
 
 # Note: will also work with `Aggregate` (& anything for which `transition` is implemented)
@@ -54,6 +72,7 @@ function expect_markov(v1::AbstractArray, v2::AbstractArray, current_state, MC)
     e1, e2
 end
 
+markov_invariant(mc::ExtendedMarkovChain)=mc.invariant
 markov_invariant(mc::MarkovChain, tol=1e-12)=markov_invariant(mc.transition,tol)
 
 " Returns eigenvector associated with A's last eigenvalue "
@@ -84,16 +103,22 @@ The `rand_tmp` vector should contain `len` draws from a uniform distribution.
 Overwrites vector `path_prealloc`.
 
 """
-function markov_genpath!(path_prealloc, mc::MarkovChain, i0, len, rand_tmp)
+function markov_genpath!(path_prealloc, mc, i0, len, rand_tmp)
     for t in 1:len
         i0 = draw_next(mc, i0, rand_tmp[t])
         path_prealloc[t] = i0
     end
 end
 
+function markov_genpath_seeded(mc, i0, len, seed=1234)
+    rand_tmp=rand(len)
+    path_prealloc = fill(0, len)
+    markov_genpath!(path_prealloc, mc, i0, len, rand_tmp)
+    return path_prealloc
+end
 
-function markov_genpath(mc::MarkovChain, i0, len, seed=1234)
-    seed!(seed)
+
+function markov_genpath(mc, i0, len)
     rand_tmp=rand(len)
     path_prealloc = fill(0, len)
     markov_genpath!(path_prealloc, mc, i0, len, rand_tmp)
@@ -126,8 +151,8 @@ function findfirstpositive(nvec)
 end
 
 
-draw_next(mc::MarkovChain, i0, r)=begin
+draw_next(mc::IndexedMarkovChain, i0, r)=begin
     @views findfirstpositive(mc.transition_cumu[i0, :] .- r)
 end
 
-draw_next(mc::MarkovChain, i0)=draw_next(mc, i0, rand())
+draw_next(mc::IndexedMarkovChain, i0)=draw_next(mc, i0, rand())

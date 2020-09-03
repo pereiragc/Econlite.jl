@@ -5,6 +5,7 @@ using Markdown
 using Unrolled
 using LinearAlgebra
 using Statistics
+import Random.seed!
 
 
 
@@ -42,15 +43,14 @@ export within_tolerance, contract!
 include("iteration.jl")
 
 
-# MarkovChain
-export MarkovChain
+# Markov chains
+export MarkovChain, ExtendedMarkovChain
 export expect_markov, transition, markov_invariant, draw_next,
-    markov_genpath, markov_genpath!, mean
+    markov_genpath, markov_genpath_seeded, markov_genpath!, mean
 include("markovchain.jl")
 
 export rouwenhorst, rouwenhorst_mc
 include("rouwenhorst.jl")
 
 
-
-end # module
+end

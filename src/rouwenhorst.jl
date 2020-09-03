@@ -46,6 +46,9 @@ points, Π = rouwenhorst(npts, rho, sig)
 
 """
 function rouwenhorst(npts, ρ, σ)
+    ω = σ/sqrt(1-ρ^2) # long run std dev
+    # println("long run variance: $ω")
+    q = (1+ρ)/2
 
     points = range(-ω*sqrt(npts - 1),
                    ω*sqrt(npts-1),
@@ -59,4 +62,4 @@ end
 
 
 "Returns a MarkovChain with discretized AR(1) from applying `rouwenhorst`"
-rouwenhrost_mc(npts, ρ, σ)=MarkovChain(rouwenhorst(npts, ρ, σ)...)
+rouwenhorst_mc(npts, ρ, σ)=MarkovChain(rouwenhorst(npts, ρ, σ)...)
