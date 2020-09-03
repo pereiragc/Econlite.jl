@@ -17,6 +17,8 @@ function gridpoints(xlow, xhigh, n, nonlinear)
             x[i]=x[i-1] + (xhigh - x[i-1])/(n-i+1)^nonlinear
         end
         x[n]=xhigh
-        x
+        return x
     end
+
+    return collect(range(xlow, xhigh, length=n))
 end
