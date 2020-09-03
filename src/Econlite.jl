@@ -2,6 +2,9 @@ module Econlite
 
 using Parameters
 using Markdown
+using Unrolled
+using LinearAlgebra
+using Statistics
 
 
 
