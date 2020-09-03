@@ -48,4 +48,9 @@ export expect_markov, transition, markov_invariant, draw_next,
     markov_genpath, markov_genpath!, mean
 include("markovchain.jl")
 
+export rouwenhorst, rouwenhorst_mc
+include("rouwenhorst.jl")
+
+
+
 end # module
