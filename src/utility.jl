@@ -4,7 +4,7 @@ abstract type AbstractIsoElastic <: AbstractSingleValuedUtility end
 dutil(c, ps::AbstractIsoElastic)=c^(-rra(ps))
 invdutil(m, ps::AbstractIsoElastic)=m^(-1/rra(ps))
 
-doc"
+"
    IsoElastic
 
 IsoElastic specification for a utility with one good.
