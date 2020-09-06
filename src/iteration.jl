@@ -159,7 +159,7 @@ function within_tolerance(a::AbstractArray,b,tol)
 end
 
 
-@inline within_tolerance(a::Float64, b, tol)=abs(b-a) <= tol
+@inline within_tolerance(a::Number, b, tol)=abs(b-a) <= tol
 @inline within_tolerance(a::Int64, b::Int64, tol)=(a == b)
 
 @unroll function within_tolerance_unroll(tup1::Tuple, tup2::Tuple, tol)

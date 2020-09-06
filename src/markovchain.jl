@@ -26,6 +26,7 @@ struct MarkovChain{T} <: IndexedMarkovChain{T}
 end
 supp(mc::MarkovChain)=mc.support
 transition(MC::MarkovChain)=MC.transition # Make rows add up to one
+transition_cumu(MC::MarkovChain)=MC.transition_cumu
 
 
 " Simples constructor for any iterable `v`. Note: no sanity check for dimensions."
@@ -47,6 +48,7 @@ MarkovChainExtended(v, M::Matrix, tol=1e-12)=
 
 supp(mc::MarkovChainExtended)=supp(mc.mc)
 transition(mc::MarkovChainExtended)=transition(mc.mc)
+transition_cumu(mc::MarkovChainExtended)=transition_cumu(mc.mc)
 
 
 # Note: will also work with `Aggregate` (& anything for which `transition` is implemented)
@@ -152,7 +154,7 @@ end
 
 
 draw_next(mc::IndexedMarkovChain, i0, r)=begin
-    @views findfirstpositive(mc.transition_cumu[i0, :] .- r)
+    @views findfirstpositive(transition_cumu(mc)[i0, :] .- r)
 end
 
 draw_next(mc::IndexedMarkovChain, i0)=draw_next(mc, i0, rand())
