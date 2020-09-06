@@ -124,7 +124,7 @@ julia> mc[markov_genpath(mc, 1, 7)]
   0.5
 ```
 
-Also, you can "combine" two Markov chains independently using `indeptensor`: 
+Also, you can "combine" two Markov chains independently: 
 
 ``` julia
 
