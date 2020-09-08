@@ -159,7 +159,12 @@ end
 
 draw_next(mc::IndexedMarkovChain, i0)=draw_next(mc, i0, rand())
 
-
-
 indeptensor(mc0::IndexedMarkovChain, mc1::IndexedMarkovChain)=MarkovChainExtended(vec(collect(Base.product(mc0, mc1))),
                                                                                          Base.kron(transition(mc1), transition(mc0)))
+
+function makemean1!(mc::IndexedMarkovChain{T}) where {T <: Number}
+    mm = Statistics.mean(mc)
+    foreach(1:length(mc)) do i
+        supp(mc)[i] /= mm
+    end
+end

@@ -47,7 +47,7 @@ include("iteration.jl")
 export IndexedMarkovChain, MarkovChain, MarkovChainExtended
 export expect_markov, transition, markov_invariant, draw_next,
     markov_genpath, markov_genpath_seeded, markov_genpath!, mean,
-    indeptensor
+    indeptensor, makemean1!
 include("markovchain.jl")
 
 export rouwenhorst, rouwenhorst_mc
