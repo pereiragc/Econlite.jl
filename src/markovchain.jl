@@ -84,7 +84,7 @@ markov_invariant(A, tol)=begin
     !within_tolerance(ed.values[end], 1, tol) &&
         error("No invariant distribution found")
 
-    evec = ed.vectors[:, end]
+    evec = Float64.(ed.vectors[:, end])
 
     makeprob!(evec)
 
