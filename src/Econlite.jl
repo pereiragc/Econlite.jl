@@ -10,7 +10,7 @@ import Random.seed!
 
 
 # Single good preferences
-export IsoElastic, LogUtility, CARA
+export IsoElastic, LogUtility, CARA, RiskNeutral
 export util, invutil, dutil, invdutil
 include("utility.jl")
 

@@ -61,3 +61,12 @@ invutil(u, ps::CARA)=(-1/ps.a)*log(1 - ps.a*u)
 dutil(c, ps::CARA)=exp(-ps.a * c)
 invdutil(m, ps::CARA)=-log(m)/ps.a
 
+
+
+" Risk neutral specification "
+struct RiskNeutral <: AbstractIsoElastic end
+
+util(c, ps::RiskNeutral)=c
+invutil(u, ps::RiskNeutral)=u
+dutil(c, ps::RiskNeutral)=one(c)
+invdutil(c, ps::RiskNeutral)=error("Tried to invert constant marginal utility from risk neutral agent")
