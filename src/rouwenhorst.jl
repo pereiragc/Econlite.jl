@@ -55,7 +55,7 @@ function rouwenhorst(npts, ρ, σ)
                    length=npts)
 
     # points = GenGrid(uniform(npts, bds))
-    Π = rouwenmat(npts, q, q)
+    Π = (npts > 1) ? rouwenmat(npts, q, q) : fill(1., (1,1))
 
     return points, Π
 end

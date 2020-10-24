@@ -16,6 +16,7 @@ transition(mc::IndexedMarkovChain, i, j)=transition(mc)[i,j]
 
 " Unconditional mean of a MarkovChain "
 Statistics.mean(mc::IndexedMarkovChain)=dot(markov_invariant(mc), supp(mc))
+Statistics.mean(mc::IndexedMarkovChain, v::AbstractVector)=dot(markov_invariant(mc), v)
 
 
 "Markov Chain with pre-stored cumulative transition matrix"
@@ -27,6 +28,7 @@ end
 supp(mc::MarkovChain)=mc.support
 transition(MC::MarkovChain)=MC.transition # Make rows add up to one
 transition_cumu(MC::MarkovChain)=MC.transition_cumu
+Base.eltype(mc::MarkovChain{T}) where T=T
 
 
 " Simples constructor for any iterable `v`. Note: no sanity check for dimensions."
@@ -41,7 +43,7 @@ struct MarkovChainExtended{T} <: IndexedMarkovChain{T}
 end
 
 MarkovChainExtended(mc::MarkovChain)=
-    MarkovChainExtended(mc, markov_invariant(mc))
+    MarkovChainExtended{eltype(mc)}(mc, markov_invariant(mc))
 MarkovChainExtended(v, M::Matrix, tol=1e-12)=
     MarkovChainExtended(MarkovChain(v, M))
 
