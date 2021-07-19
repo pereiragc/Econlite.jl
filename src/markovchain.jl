@@ -20,15 +20,15 @@ Statistics.mean(mc::IndexedMarkovChain, v::AbstractVector)=dot(markov_invariant(
 
 
 "Markov Chain with pre-stored cumulative transition matrix"
-struct MarkovChain{T} <: IndexedMarkovChain{T}
+struct MarkovChain{T, S} <: IndexedMarkovChain{T}
     support::Vector{T}
-    transition::Matrix{Float64}
-    transition_cumu::Matrix{Float64}
+    transition::Matrix{S}
+    transition_cumu::Matrix{S}
 end
 supp(mc::MarkovChain)=mc.support
 transition(MC::MarkovChain)=MC.transition # Make rows add up to one
 transition_cumu(MC::MarkovChain)=MC.transition_cumu
-Base.eltype(mc::MarkovChain{T}) where T=T
+Base.eltype(mc::MarkovChain{T, S}) where {T, S}=T
 
 
 " Simples constructor for any iterable `v`. Note: no sanity check for dimensions."
@@ -37,13 +37,13 @@ MarkovChain(v, M::Matrix)=MarkovChain([v[i] for i in 1:length(v)], M,
 
 
 " Same as `MarkovChain`, but pre-store invariant distribution "
-struct MarkovChainExtended{T} <: IndexedMarkovChain{T}
-    mc::MarkovChain{T}
+struct MarkovChainExtended{T, S} <: IndexedMarkovChain{T}
+    mc::MarkovChain{T, S}
     invariant::Array{Float64, 1}
 end
 
-MarkovChainExtended(mc::MarkovChain)=
-    MarkovChainExtended{eltype(mc)}(mc, markov_invariant(mc))
+MarkovChainExtended(mc::MarkovChain{T, S}) where {T,S}=
+    MarkovChainExtended{T, S}(mc, markov_invariant(mc))
 MarkovChainExtended(v, M::Matrix, tol=1e-12)=
     MarkovChainExtended(MarkovChain(v, M))
 
@@ -94,8 +94,6 @@ markov_invariant(A, tol)=begin
 end
 
 makeprob!(u)=(u ./= sum(u))
-
-
 
 
 """

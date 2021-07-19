@@ -14,14 +14,14 @@ function rouwenupdate!(Πold, Πnew, p, q)
     nothing
 end
 
-function rouwenmat(N, p, q)
+function rouwenmat(N, ρ, p, q)
     initmat = [p 1-p;1-q q]
     if N==2
         ret = initmat
     else
         currmat = initmat
         for n = 3:N
-            nextmat = fill(0., (n, n))
+            nextmat = fill(zero(ρ), (n, n))
             rouwenupdate!(currmat, nextmat, p, q)
             currmat = nextmat
             RouwenNormalize!(currmat)
@@ -55,7 +55,7 @@ function rouwenhorst(npts, ρ, σ)
                    length=npts)
 
     # points = GenGrid(uniform(npts, bds))
-    Π = (npts > 1) ? rouwenmat(npts, q, q) : fill(1., (1,1))
+    Π = (npts > 1) ? rouwenmat(npts, ρ, q, q) : fill(one(ρ), (1,1))
 
     return points, Π
 end
